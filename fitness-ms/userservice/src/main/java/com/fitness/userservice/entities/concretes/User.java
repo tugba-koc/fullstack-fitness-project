@@ -3,6 +3,7 @@ package com.fitness.userservice.entities.concretes;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CurrentTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fitness.userservice.entities.enums.UserRole;
 
@@ -19,7 +20,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Table(name="User")
+@Table(name="Users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -50,6 +51,7 @@ public class User {
         @Column(name="created_at", nullable = false)
         private LocalDateTime createdAt;
 
+        @UpdateTimestamp
         @Column(name="updated_at")
         private LocalDateTime updatedAt;
 }
