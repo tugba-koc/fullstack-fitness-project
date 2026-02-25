@@ -1,11 +1,11 @@
-package com.fitness.userservice.entities.concretes;
+package com.fitness.activityservice.entities.concretes;
 
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CurrentTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.fitness.userservice.entities.enums.UserRole;
+import com.fitness.activityservice.entities.enums.UserRole;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,39 +20,28 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Table(name="Users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 @Builder
-public class User {
+@Document(collection = "activityCollection")
+public class Activity {
         @Id
         @GeneratedValue(strategy = GenerationType.UUID)
         @Column(name="id")
         private String id;
 
-        @Column(name="email", nullable = false, unique = true)
-        private String email;
+        private String userId;
 
-        @Column(name="first_name", nullable = false)
-        private String firstName;
+        private ActivityType type;
 
-        @Column(name="last_name", nullable = false)
-        private String lastName;
+        private Integer duration;
 
-        @Column(name="password", nullable = false)
-        private String password;
-
-        @Enumerated(EnumType.STRING)
-        @Builder.Default
-        private UserRole role = UserRole.USER;
+        private Integer caloriesBurned;
 
         @CurrentTimestamp
-        @Column(name="created_at", nullable = false)
         private LocalDateTime createdAt;
 
         @UpdateTimestamp
-        @Column(name="updated_at")
         private LocalDateTime updatedAt;
 }
