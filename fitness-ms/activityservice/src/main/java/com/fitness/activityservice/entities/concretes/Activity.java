@@ -1,20 +1,16 @@
 package com.fitness.activityservice.entities.concretes;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
-import org.hibernate.annotations.CurrentTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.fitness.activityservice.entities.enums.UserRole;
+import com.fitness.activityservice.entities.enums.ActivityType;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,11 +20,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(collection = "activityCollection")
+@Document(collection = "activities")
 public class Activity {
         @Id
-        @GeneratedValue(strategy = GenerationType.UUID)
-        @Column(name="id")
         private String id;
 
         private String userId;
@@ -39,9 +33,14 @@ public class Activity {
 
         private Integer caloriesBurned;
 
-        @CurrentTimestamp
+        private LocalDateTime startTime;
+
+        @Field("metrics")
+        private Map<String, Object> additionalMetrics;
+
+        @CreatedDate
         private LocalDateTime createdAt;
 
-        @UpdateTimestamp
+        @LastModifiedDate
         private LocalDateTime updatedAt;
 }
