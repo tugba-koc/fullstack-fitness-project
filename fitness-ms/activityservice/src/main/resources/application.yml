@@ -2,8 +2,8 @@ server:
   port: 8082
 
 spring:
-  config:
-    import: optional:file:src/main/resources/.env[.properties]
+  profiles:
+    include: local
   application:
     name: activityservice
   data:
