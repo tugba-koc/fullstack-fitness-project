@@ -5,9 +5,11 @@ import java.util.Map;
 
 import com.fitness.activityservice.entities.enums.ActivityType;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class ActivityResponse {
         private String id;
         private String userId;
