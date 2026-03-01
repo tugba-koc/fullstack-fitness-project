@@ -2,9 +2,11 @@ server:
   port: 8082
 
 spring:
+  config:
+    import: optional:file:src/main/resources/.env[.properties]
   application:
     name: activityservice
   data:
     mongodb:
-      uri: mongodb://localhost:27017/fitnessactivity
-      database: fitnessactivity
+      uri: mongodb+srv://${DB_USER}:${DB_PASSWORD}@fitness-cluster.abj21cx.mongodb.net/${DB_NAME}?retryWrites=true&w=majority
+      database: ${DB_NAME}
