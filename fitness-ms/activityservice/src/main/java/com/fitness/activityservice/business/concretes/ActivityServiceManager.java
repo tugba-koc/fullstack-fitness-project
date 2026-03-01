@@ -1,5 +1,7 @@
 package com.fitness.activityservice.business.concretes;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.fitness.activityservice.business.abstracts.ActivityService;
@@ -30,6 +32,21 @@ public class ActivityServiceManager implements ActivityService {
         // Save the activity to the database
         activityRepository.save(activity);
         
+        return ActivityMapper.toActivityResponse(activity);
+    }
+
+    @Override
+    public List<ActivityResponse> getUserActivity(String userId) {
+        List<Activity> activities = activityRepository.findByUserId(userId);
+        return activities.stream()
+                .map(ActivityMapper::toActivityResponse)
+                .toList();
+    }
+
+    @Override
+    public ActivityResponse getActivity(String activityId) {
+        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new RuntimeException("Activity not found with id: " + activityId));
+
         return ActivityMapper.toActivityResponse(activity);
     }
 }
