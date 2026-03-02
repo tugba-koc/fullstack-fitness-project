@@ -34,4 +34,10 @@ public class UserController {
     public ResponseEntity<UserResponse> register(@Valid @RequestBody UserRegisterRequest request) {
         return ResponseEntity.ok(userService.register(request));
     }
+
+    @GetMapping("/{userId}/validate")
+    @CrossOrigin(exposedHeaders = {"Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"})
+    public ResponseEntity<Boolean> validateUser(@PathVariable String userId) {
+        return ResponseEntity.ok(userService.existByUserId(userId));
+    }
 }

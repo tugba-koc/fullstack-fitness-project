@@ -7,4 +7,5 @@ import com.fitness.userservice.business.dto.responses.UserResponse;
 public interface UserService {
     UserProfileResponse getUserProfile(String userId);
     UserResponse register(UserRegisterRequest userRegisterRequest);
+    Boolean existByUserId(String userId);
 }

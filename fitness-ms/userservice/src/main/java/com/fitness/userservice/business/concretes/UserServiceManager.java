@@ -55,4 +55,9 @@ public class UserServiceManager implements UserService {
                 .requestId(UUID.randomUUID().toString())
                 .build();
     }
+
+    @Override
+    public Boolean existByUserId(String userId) {
+        return userRepository.existsById(userId);
+    }
 }
