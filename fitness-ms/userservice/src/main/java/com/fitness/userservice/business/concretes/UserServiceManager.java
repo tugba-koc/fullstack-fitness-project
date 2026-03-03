@@ -13,7 +13,10 @@ import com.fitness.userservice.business.dto.responses.UserResponse;
 import com.fitness.userservice.dataAccess.abstracts.UserRepository;
 import com.fitness.userservice.entities.concretes.User;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class UserServiceManager implements UserService {
 
     @Autowired
@@ -58,6 +61,7 @@ public class UserServiceManager implements UserService {
 
     @Override
     public Boolean existByUserId(String userId) {
+        log.info("Checking existence of user with id: {}", userId);
         return userRepository.existsById(userId);
     }
 }
