@@ -17,9 +17,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ActivityServiceManager implements ActivityService {
     private final ActivityRepository activityRepository;
+    private final UserValidateServiceManager userValidateService;
     
     @Override
     public ActivityResponse trackActivity(ActivityRequest request) {
+        // Validate user existence
+        boolean isValidUser = userValidateService.validateUserId(request.getUserId());
+        
+        if (!isValidUser) {
+                throw new RuntimeException("User with id " + request.getUserId() + " not found.");
+        }
+
         Activity activity = Activity.builder()
                 .userId(request.getUserId())
                 .type(request.getType())
