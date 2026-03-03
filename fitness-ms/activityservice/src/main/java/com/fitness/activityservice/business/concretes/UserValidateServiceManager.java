@@ -7,14 +7,17 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import com.fitness.activityservice.business.abstracts.UserValidateService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class UserValidateServiceManager implements UserValidateService {
         private final WebClient userServiceWebClient;
 
         @Override
         public boolean validateUserId(String userId) {
+                log.info("Calling user service to validate user with id: {}", userId);
                 try {
                         return userServiceWebClient.get()
                         .uri("/api/users/{userId}/validate", userId)
