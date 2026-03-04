@@ -17,12 +17,13 @@ public class RecommendationManager implements RecommendationService {
         
         @Override
         public List<Recommendation> getUserRecommendation(String userId) {
+                return recommendationRepository.findByUserId(userId);
         }
 
         @Override
-        public List<Recommendation> getActivityRecommendation(String activityId) {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException("Unimplemented method 'getActivityRecommendation'");
+        public Recommendation getActivityRecommendation(String activityId) {
+                return recommendationRepository.findByActivityId(activityId)
+                        .orElseThrow(() -> new RuntimeException("Recommendation not found for activityId: " + activityId));
         }
         
 }
