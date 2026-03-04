@@ -18,5 +18,11 @@ public class RecommendationManager implements RecommendationService {
         @Override
         public List<Recommendation> getUserRecommendation(String userId) {
         }
+
+        @Override
+        public List<Recommendation> getActivityRecommendation(String activityId) {
+                // TODO Auto-generated method stub
+                throw new UnsupportedOperationException("Unimplemented method 'getActivityRecommendation'");
+        }
         
 }
