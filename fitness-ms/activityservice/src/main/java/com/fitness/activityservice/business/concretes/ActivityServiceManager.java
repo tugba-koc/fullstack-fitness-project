@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ActivityServiceManager implements ActivityService {
     private final ActivityRepository activityRepository;
     private final UserValidateServiceManager userValidateService;
