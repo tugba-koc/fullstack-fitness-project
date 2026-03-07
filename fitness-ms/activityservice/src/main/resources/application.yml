@@ -10,6 +10,11 @@ spring:
     mongodb:
       uri: mongodb+srv://${DB_USER}:${DB_PASSWORD}@fitness-cluster.abj21cx.mongodb.net/${DB_NAME}?retryWrites=true&w=majority
       database: ${DB_NAME}
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
 
 eureka:
   client:
