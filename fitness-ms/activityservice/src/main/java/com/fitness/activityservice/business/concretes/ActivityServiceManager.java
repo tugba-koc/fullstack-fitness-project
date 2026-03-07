@@ -2,6 +2,8 @@ package com.fitness.activityservice.business.concretes;
 
 import java.util.List;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fitness.activityservice.business.abstracts.ActivityService;
@@ -12,12 +14,20 @@ import com.fitness.activityservice.dataAccess.abstracts.ActivityRepository;
 import com.fitness.activityservice.entities.concretes.Activity;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
 public class ActivityServiceManager implements ActivityService {
     private final ActivityRepository activityRepository;
     private final UserValidateServiceManager userValidateService;
+    private final RabbitTemplate rabbitTemplate;
+
+    @Value("${rabbitmq.exchange.name}")
+    private String exchange;
+
+    @Value("${rabbitmq.routing.key}")
+    private String routingKey;
     
     @Override
     public ActivityResponse trackActivity(ActivityRequest request) {
@@ -38,9 +48,16 @@ public class ActivityServiceManager implements ActivityService {
                 .build();
 
         // Save the activity to the database
-        activityRepository.save(activity);
+        Activity savedActivity = activityRepository.save(activity);
+
+        // Publish event to RabbitMQ for AI recommendation
+        try {
+            rabbitTemplate.convertAndSend(exchange, routingKey, savedActivity);
+        } catch (Exception e) {
+            log.error("Failed to publish activity event to RabbitMQ", e);
+        }
         
-        return ActivityMapper.toActivityResponse(activity);
+        return ActivityMapper.toActivityResponse(savedActivity);
     }
 
     @Override
