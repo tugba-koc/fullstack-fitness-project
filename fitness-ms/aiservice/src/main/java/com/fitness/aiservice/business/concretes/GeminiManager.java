@@ -23,7 +23,7 @@ public class GeminiManager implements GeminiService {
         private String geminiApiUrl;
 
         @Override
-        public String generateRecommendation(String prompt) {
+        public String getAnswer(String prompt) {
                 Map<String, Object> requestBody = Map.of(
                         "contents", new Object[] {
                                 Map.of(
