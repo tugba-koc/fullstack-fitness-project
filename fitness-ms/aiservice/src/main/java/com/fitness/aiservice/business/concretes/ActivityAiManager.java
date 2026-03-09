@@ -2,6 +2,8 @@ package com.fitness.aiservice.business.concretes;
 
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fitness.aiservice.entities.concretes.Activity;
 
 import lombok.RequiredArgsConstructor;
@@ -17,7 +19,31 @@ public class ActivityAiManager {
                 String prompt = createPromptForActivity(activity);
                 String aiResponse = geminiManager.getAnswer(prompt);
                 log.info("response from ai: {} ", aiResponse);
+                processAiResponse(activity, aiResponse);
                 return aiResponse; 
+        }
+
+        private void processAiResponse(Activity activity,String aiResponse) {
+                try {
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        JsonNode rootNode = objectMapper.readTree(aiResponse);
+                        JsonNode contentsNode = rootNode.path("candidates")
+                                .get(0)
+                                .path("content")
+                                .path("parts")
+                                .get(0)
+                                .path("text");
+
+                        String recommendation = contentsNode.asText()
+                                .replaceAll("```json\\n", "")
+                                .replaceAll("\\n```", "")
+                                .trim();
+
+                        log.info("Parsed recommendation: {} ", recommendation);
+                        
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
         }
 
 
