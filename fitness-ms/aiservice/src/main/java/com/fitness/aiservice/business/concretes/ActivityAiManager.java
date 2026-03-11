@@ -63,6 +63,23 @@ public class ActivityAiManager {
                 safety;
     }
 
+    private Recommendation createDefaultRecommendation(Activity activity) {
+        return Recommendation.builder()
+                .activityId(activity.getId())
+                .userId(activity.getUserId())
+                .activityType(activity.getType())
+                .recommendation("Unable to generate detailed analysis")
+                .improvements(Collections.singletonList("Continue with your current routine"))
+                .suggestions(Collections.singletonList("Consider consulting a fitness professional"))
+                .safety(Arrays.asList(
+                        "Always warm up before exercise",
+                        "Stay hydrated",
+                        "Listen to your body"
+                ))
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+
     private List<String> extractSuggestions(JsonNode suggestionsNode) {
         List<String> suggestions = new ArrayList<>();
         if (suggestionsNode.isArray()) {
@@ -77,7 +94,7 @@ public class ActivityAiManager {
                 suggestions;
     }
 
-    private void processAiResponse(Activity activity, String aiResponse) {
+    private Recommendation processAiResponse(Activity activity, String aiResponse) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(aiResponse);
@@ -119,6 +136,7 @@ public class ActivityAiManager {
 
         } catch (Exception e) {
             e.printStackTrace();
+            return createDefaultRecommendation(activity);
         }
     }
 
