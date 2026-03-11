@@ -1,36 +1,6 @@
-server:
-  port: 8083
-
 spring:
-  profiles:
-    include: local
   application:
     name: aiservice
-  data:
-    mongodb:
-      uri: mongodb+srv://${DB_USER}:${DB_PASSWORD}@fitness-cluster.abj21cx.mongodb.net/${DB_NAME}?retryWrites=true&w=majority
-      database: ${DB_NAME}
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-
-rabbitmq:
-  exchange:
-    name: fitness.exchange
-  queue:
-    name: activity.queue
-  routing:
-    key: activity.tracking
-
-gemini:
-  api:
-    key: ${GEMINI_API_KEY}
-    url: ${GEMINI_API_URL}
+  config:
+    import: "optional:configserver:http://localhost:8888"
     
