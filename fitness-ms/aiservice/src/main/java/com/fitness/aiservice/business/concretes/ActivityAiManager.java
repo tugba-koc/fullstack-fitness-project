@@ -1,10 +1,17 @@
 package com.fitness.aiservice.business.concretes;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.catalina.mapper.Mapper;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fitness.aiservice.entities.concretes.Activity;
+import com.fitness.aiservice.entities.concretes.Recommendation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,43 +20,111 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class ActivityAiManager {
-        private final GeminiManager geminiManager;
 
-        public String generateRecommendation(Activity activity) {
-                String prompt = createPromptForActivity(activity);
-                String aiResponse = geminiManager.getAnswer(prompt);
-                log.info("response from ai: {} ", aiResponse);
-                processAiResponse(activity, aiResponse);
-                return aiResponse; 
+    private final GeminiManager geminiManager;
+
+    public String generateRecommendation(Activity activity) {
+        String prompt = createPromptForActivity(activity);
+        String aiResponse = geminiManager.getAnswer(prompt);
+        log.info("response from ai: {} ", aiResponse);
+        processAiResponse(activity, aiResponse);
+        return aiResponse;
+    }
+
+    private List<String> extractImprovements(JsonNode improvementsNode) {
+        List<String> improvements = new ArrayList<>();
+        if (improvementsNode.isArray()) {
+            improvementsNode.forEach(improvement -> {
+                String area = improvement.path("area").asText();
+                String detail = improvement.path("recommendation").asText();
+                improvements.add(String.format("%s: %s", area, detail));
+            });
         }
+        return improvements.isEmpty() ?
+                Collections.singletonList("No specific improvements provided") :
+                improvements;
+    }
 
-        private void processAiResponse(Activity activity,String aiResponse) {
-                try {
-                        ObjectMapper objectMapper = new ObjectMapper();
-                        JsonNode rootNode = objectMapper.readTree(aiResponse);
-                        JsonNode contentsNode = rootNode.path("candidates")
-                                .get(0)
-                                .path("content")
-                                .path("parts")
-                                .get(0)
-                                .path("text");
-
-                        String recommendation = contentsNode.asText()
-                                .replaceAll("```json\\n", "")
-                                .replaceAll("\\n```", "")
-                                .trim();
-
-                        log.info("Parsed recommendation: {} ", recommendation);
-                        
-                } catch (Exception e) {
-                        e.printStackTrace();
-                }
+    private void addAnalysisSection(StringBuilder fullAnalysis, JsonNode analysisNode, String key, String prefix) {
+        if (!analysisNode.path(key).isMissingNode()) {
+            fullAnalysis.append(prefix)
+                    .append(analysisNode.path(key).asText())
+                    .append("\n\n");
         }
+    }
 
-
-        private String createPromptForActivity(Activity activity) {
-                return String.format(
-                        "I am doing %s for %d minutes. Can you suggest a suitable warm-up exercise and a cool-down exercise for this activity?",
-                        activity.getType(), activity.getDuration());
+    private List<String> extractSafetyGuidelines(JsonNode safetyNode) {
+        List<String> safety = new ArrayList<>();
+        if (safetyNode.isArray()) {
+            safetyNode.forEach(item -> safety.add(item.asText()));
         }
+        return safety.isEmpty() ?
+                Collections.singletonList("Follow general safety guidelines") :
+                safety;
+    }
+
+    private List<String> extractSuggestions(JsonNode suggestionsNode) {
+        List<String> suggestions = new ArrayList<>();
+        if (suggestionsNode.isArray()) {
+            suggestionsNode.forEach(suggestion -> {
+                String workout = suggestion.path("workout").asText();
+                String description = suggestion.path("description").asText();
+                suggestions.add(String.format("%s: %s", workout, description));
+            });
+        }
+        return suggestions.isEmpty() ?
+                Collections.singletonList("No specific suggestions provided") :
+                suggestions;
+    }
+
+    private void processAiResponse(Activity activity, String aiResponse) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(aiResponse);
+            JsonNode contentsNode = rootNode.path("candidates")
+                    .get(0)
+                    .path("content")
+                    .path("parts")
+                    .get(0)
+                    .path("text");
+
+            String jsonContent = contentsNode.asText()
+                    .replaceAll("```json\\n", "")
+                    .replaceAll("\\n```", "")
+                    .trim();
+
+            JsonNode analysisJson = mapper.readTree(jsonContent);
+            JsonNode analysisNode = analysisJson.path("analysis");
+
+            StringBuilder fullAnalysis = new StringBuilder();
+            addAnalysisSection(fullAnalysis, analysisNode, "overall", "Overall:");
+            addAnalysisSection(fullAnalysis, analysisNode, "pace", "Pace:");
+            addAnalysisSection(fullAnalysis, analysisNode, "heartRate", "Heart Rate:");
+            addAnalysisSection(fullAnalysis, analysisNode, "caloriesBurned", "Calories:");
+
+            List<String> improvements = extractImprovements(analysisJson.path("improvements"));
+            List<String> suggestions = extractSuggestions(analysisJson.path("suggestions"));
+            List<String> safety = extractSafetyGuidelines(analysisJson.path("safety"));
+
+            return Recommendation.builder()
+                    .activityId(activity.getId())
+                    .userId(activity.getUserId())
+                    .activityType(activity.getType())
+                    .recommendation(fullAnalysis.toString().trim())
+                    .improvements(improvements)
+                    .suggestions(suggestions)
+                    .safety(safety)
+                    .createdAt(LocalDateTime.now())
+                    .build();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String createPromptForActivity(Activity activity) {
+        return String.format(
+                "I am doing %s for %d minutes. Can you suggest a suitable warm-up exercise and a cool-down exercise for this activity?",
+                activity.getType(), activity.getDuration());
+    }
 }
