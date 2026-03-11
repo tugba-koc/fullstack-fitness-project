@@ -79,8 +79,8 @@ public class ActivityAiManager {
 
     private void processAiResponse(Activity activity, String aiResponse) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode rootNode = objectMapper.readTree(aiResponse);
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(aiResponse);
             JsonNode contentsNode = rootNode.path("candidates")
                     .get(0)
                     .path("content")
