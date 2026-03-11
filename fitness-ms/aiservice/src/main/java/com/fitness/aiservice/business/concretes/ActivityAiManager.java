@@ -2,6 +2,7 @@ package com.fitness.aiservice.business.concretes;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,12 +24,11 @@ public class ActivityAiManager {
 
     private final GeminiManager geminiManager;
 
-    public String generateRecommendation(Activity activity) {
+    public Recommendation generateRecommendation(Activity activity) {
         String prompt = createPromptForActivity(activity);
         String aiResponse = geminiManager.getAnswer(prompt);
         log.info("response from ai: {} ", aiResponse);
-        processAiResponse(activity, aiResponse);
-        return aiResponse;
+        return processAiResponse(activity, aiResponse);
     }
 
     private List<String> extractImprovements(JsonNode improvementsNode) {
