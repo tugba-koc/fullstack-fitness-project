@@ -3,11 +3,33 @@
     "configurations": [
         {
             "type": "java",
+            "name": "UserserviceApplication",
+            "request": "launch",
+            "mainClass": "com.fitness.userservice.UserserviceApplication",
+            "projectName": "userservice"
+        },
+        {
+            "type": "java",
+            "name": "ConfigserverApplication",
+            "request": "launch",
+            "mainClass": "com.fitness.configserver.ConfigserverApplication",
+            "projectName": "configserver"
+        },
+        {
+            "type": "java",
+            "name": "ActivityserviceApplication",
+            "request": "launch",
+            "mainClass": "com.fitness.activityservice.ActivityserviceApplication",
+            "projectName": "activityservice",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
             "name": "AiserviceApplication",
             "request": "launch",
             "mainClass": "com.fitness.aiservice.AiserviceApplication",
             "projectName": "aiservice",
-            "envFile": "${workspaceFolder}/.env" 
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }
