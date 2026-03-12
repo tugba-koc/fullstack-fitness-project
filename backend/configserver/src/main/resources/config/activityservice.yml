@@ -2,8 +2,6 @@ server:
   port: 8082
 
 spring:
-  profiles:
-    include: local
   data:
     mongodb:
       uri: mongodb+srv://${ACTIVITY_DB_USER}:${ACTIVITY_DB_PASSWORD}@fitness-cluster.abj21cx.mongodb.net/${ACTIVITY_DB_NAME}?retryWrites=true&w=majority
